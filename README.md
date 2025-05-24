@@ -2,6 +2,10 @@
 
 A modern, customizable rich text editor component for React applications. Built with TypeScript and styled with CSS-in-JS.
 
+![Simple Rich Editor](simple-rich-editor.png)
+
+[![Edit on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/devbox/eager-ardinghelli-rg5kgl)
+
 ## Features
 
 - 🎨 Modern and clean design
