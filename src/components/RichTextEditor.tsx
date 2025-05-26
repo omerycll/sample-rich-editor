@@ -329,21 +329,43 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           ))}
         </div>
         {isLinkModalOpen && (
-          <div className="link-modal">
-            <input
-              type="text"
-              value={linkUrl}
-              onChange={(e) => setLinkUrl(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Bağlantı URL'si"
-              autoFocus
-            />
-            <button onClick={insertLink}>Ekle</button>
-            <button onClick={() => {
+          <>
+            <div className="link-modal-overlay" onClick={() => {
               setIsLinkModalOpen(false);
               setLinkUrl('');
-            }}>İptal</button>
-          </div>
+            }} />
+            <div className="link-modal">
+              <div className="link-modal-header">
+                <h3>Bağlantı Ekle</h3>
+                <button
+                  className="close-button"
+                  onClick={() => {
+                    setIsLinkModalOpen(false);
+                    setLinkUrl('');
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+              <div className="link-modal-content">
+                <input
+                  type="text"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="https://example.com"
+                  autoFocus
+                />
+                <div className="link-modal-actions">
+                  <button onClick={() => {
+                    setIsLinkModalOpen(false);
+                    setLinkUrl('');
+                  }}>İptal</button>
+                  <button onClick={insertLink} className="primary">Ekle</button>
+                </div>
+              </div>
+            </div>
+          </>
         )}
       </div>
 
@@ -414,65 +436,119 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           transform: translateY(1px);
         }
 
+        .link-modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          z-index: 999;
+        }
+
         .link-modal {
-          position: absolute;
-          top: 100%;
+          position: fixed;
+          top: 50%;
           left: 50%;
-          transform: translateX(-50%);
+          transform: translate(-50%, -50%);
           background: white;
-          padding: 16px;
           border-radius: ${mergedTheme.borderRadius.editor};
-          box-shadow: ${mergedTheme.shadows.editor};
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           border: 1px solid ${mergedTheme.colors.border};
           z-index: 1000;
+          width: 400px;
+          max-width: calc(100vw - 32px);
+          max-height: calc(100vh - 32px);
           display: flex;
-          gap: 8px;
-          margin-top: 8px;
+          flex-direction: column;
         }
 
-        .link-modal::before {
-          content: '';
-          position: absolute;
-          top: -6px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 0;
-          height: 0;
-          border-left: 6px solid transparent;
-          border-right: 6px solid transparent;
-          border-bottom: 6px solid ${mergedTheme.colors.border};
+        .link-modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 16px;
+          border-bottom: 1px solid ${mergedTheme.colors.border};
+          flex-shrink: 0;
         }
 
-        .link-modal::after {
-          content: '';
-          position: absolute;
-          top: -5px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 0;
-          height: 0;
-          border-left: 6px solid transparent;
-          border-right: 6px solid transparent;
-          border-bottom: 6px solid white;
+        .link-modal-header h3 {
+          margin: 0;
+          font-size: 1.1em;
+          color: ${mergedTheme.colors.heading};
         }
 
-        .link-modal input {
-          padding: 8px;
+        .link-modal-header .close-button {
+          background: none;
+          border: none;
+          font-size: 24px;
+          cursor: pointer;
+          padding: 0;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: ${mergedTheme.colors.buttonText};
+          border-radius: 50%;
+        }
+
+        .link-modal-header .close-button:hover {
+          background: ${mergedTheme.colors.buttonHoverBackground};
+        }
+
+        .link-modal-content {
+          padding: 16px;
+          overflow-y: auto;
+          flex-grow: 1;
+        }
+
+        .link-modal-content input {
+          width: 100%;
+          padding: 8px 12px;
           border: 1px solid ${mergedTheme.colors.border};
           border-radius: ${mergedTheme.borderRadius.button};
-          min-width: 200px;
+          font-size: 14px;
+          margin-bottom: 16px;
+          box-sizing: border-box;
         }
 
-        .link-modal button {
+        .link-modal-content input:focus {
+          outline: none;
+          border-color: ${mergedTheme.colors.link};
+          box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        .link-modal-actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: 8px;
+          padding: 16px;
+          border-top: 1px solid ${mergedTheme.colors.border};
+          flex-shrink: 0;
+        }
+
+        .link-modal-actions button {
           padding: 8px 16px;
           border: 1px solid ${mergedTheme.colors.border};
           border-radius: ${mergedTheme.borderRadius.button};
           background: ${mergedTheme.colors.buttonBackground};
           cursor: pointer;
+          font-size: 14px;
         }
 
-        .link-modal button:hover {
+        .link-modal-actions button.primary {
+          background: ${mergedTheme.colors.link};
+          color: white;
+          border-color: ${mergedTheme.colors.link};
+        }
+
+        .link-modal-actions button:hover {
           background: ${mergedTheme.colors.buttonHoverBackground};
+        }
+
+        .link-modal-actions button.primary:hover {
+          background: #1d4ed8;
         }
 
         .simple-rich-editor-content {

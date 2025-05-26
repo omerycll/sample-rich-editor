@@ -12,7 +12,7 @@ const App = () => {
       <h1>Rich Text Editor Test</h1>
       <RichTextEditor
         toolbar={[
-          ['bold', 'italic', 'underline']
+          ['bold', 'italic', 'underline', 'link']
         ]}
         initialContent="<p>Merhaba! Bu bir test içeriğidir.</p>"
         onChange={handleChange}

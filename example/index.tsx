@@ -9,7 +9,7 @@ const App = () => {
   return (
     <div>
       <h1>Simple Rich Editor Example </h1>
-      < RichTextEditor
+      <RichTextEditor
         initialContent="<p>Merhaba! Buraya yazmaya başlayabilirsiniz.</p>"
         onChange={handleChange}
       />

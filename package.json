@@ -1,6 +1,6 @@
 {
   "name": "@omerfycll/simple-rich-editor",
-  "version": "1.0.3n",
+  "version": "1.0.4",
   "description": "A simple rich text editor for React applications",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
