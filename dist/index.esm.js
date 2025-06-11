@@ -207,7 +207,7 @@ var defaultToolbar = [
     ['bold', 'italic', 'underline', 'strike', 'link'],
     ['heading'],
     ['unorderedList', 'orderedList'],
-    ['blockquote', 'code', 'clearFormat']
+    ['blockquote', 'code', 'clearFormat'],
 ];
 var RichTextEditor = function (_a) {
     var _b = _a.initialContent, initialContent = _b === void 0 ? '' : _b, onChange = _a.onChange, className = _a.className, style = _a.style, _c = _a.theme, theme = _c === void 0 ? {} : _c, _d = _a.iconSize, iconSize = _d === void 0 ? 24 : _d, _e = _a.toolbar, toolbar = _e === void 0 ? defaultToolbar : _e;
@@ -217,6 +217,7 @@ var RichTextEditor = function (_a) {
     var _h = useState(false), isLinkModalOpen = _h[0], setIsLinkModalOpen = _h[1];
     var _j = useState(''), linkUrl = _j[0], setLinkUrl = _j[1];
     var _k = useState(null), savedSelection = _k[0], setSavedSelection = _k[1];
+    var _l = useState(''), validationError = _l[0], setValidationError = _l[1];
     var mergedTheme = __assign(__assign(__assign({}, defaultTheme), theme), { colors: __assign(__assign({}, defaultTheme.colors), theme.colors), spacing: __assign(__assign({}, defaultTheme.spacing), theme.spacing), typography: __assign(__assign({}, defaultTheme.typography), theme.typography), borderRadius: __assign(__assign({}, defaultTheme.borderRadius), theme.borderRadius), shadows: __assign(__assign({}, defaultTheme.shadows), theme.shadows), dimensions: __assign(__assign({}, defaultTheme.dimensions), theme.dimensions) });
     useEffect(function () {
         if (!isInitialized && editorRef.current) {
@@ -287,21 +288,22 @@ var RichTextEditor = function (_a) {
         if (selection && selection.toString()) {
             saveSelection();
             setIsLinkModalOpen(true);
+            setValidationError('');
         }
         else {
-            alert('Lütfen bağlantı eklemek için metin seçin');
+            setValidationError('Please select text to add a link');
         }
     };
     var insertLink = function () {
         if (!linkUrl) {
-            alert('Lütfen bir URL girin');
+            setValidationError('Please enter a URL');
             return;
         }
         try {
             new URL(linkUrl);
         }
         catch (_a) {
-            alert('Lütfen geçerli bir URL girin');
+            setValidationError('Please enter a valid URL');
             return;
         }
         if (savedSelection && editorRef.current) {
@@ -322,6 +324,7 @@ var RichTextEditor = function (_a) {
             setLinkUrl('');
             setIsLinkModalOpen(false);
             setSavedSelection(null);
+            setValidationError('');
             // Editöre focus'u geri ver
             editorRef.current.focus();
         }
@@ -335,59 +338,64 @@ var RichTextEditor = function (_a) {
             setIsLinkModalOpen(false);
             setLinkUrl('');
             setSavedSelection(null);
+            setValidationError('');
         }
     };
     var renderToolbarButton = function (item) {
         switch (item) {
             case 'bold':
-                return React.createElement(BoldIcon, { onClick: function () { return execCommand('bold'); }, title: "Bold", size: iconSize });
+                return (React.createElement(BoldIcon, { onClick: function () { return execCommand('bold'); }, title: 'Bold', size: iconSize }));
             case 'italic':
-                return React.createElement(ItalicIcon, { onClick: function () { return execCommand('italic'); }, title: "Italic", size: iconSize });
+                return (React.createElement(ItalicIcon, { onClick: function () { return execCommand('italic'); }, title: 'Italic', size: iconSize }));
             case 'underline':
-                return React.createElement(UnderlineIcon, { onClick: function () { return execCommand('underline'); }, title: "Underline", size: iconSize });
+                return (React.createElement(UnderlineIcon, { onClick: function () { return execCommand('underline'); }, title: 'Underline', size: iconSize }));
             case 'strike':
-                return React.createElement(StrikeIcon, { onClick: function () { return execCommand('strikeThrough'); }, title: "Strikethrough", size: iconSize });
+                return (React.createElement(StrikeIcon, { onClick: function () { return execCommand('strikeThrough'); }, title: 'Strikethrough', size: iconSize }));
             case 'link':
-                return React.createElement(LinkIcon, { onClick: handleLink, title: "Link", size: iconSize });
+                return React.createElement(LinkIcon, { onClick: handleLink, title: 'Link', size: iconSize });
             case 'heading':
-                return React.createElement(HeadingDropdown, { title: "Ba\u015Fl\u0131k", size: iconSize });
+                return React.createElement(HeadingDropdown, { title: 'Heading', size: iconSize });
             case 'unorderedList':
-                return React.createElement(UnorderedListIcon, { onClick: function () { return execCommand('insertUnorderedList'); }, title: "Unordered List", size: iconSize });
+                return (React.createElement(UnorderedListIcon, { onClick: function () { return execCommand('insertUnorderedList'); }, title: 'Unordered List', size: iconSize }));
             case 'orderedList':
-                return React.createElement(OrderedListIcon, { onClick: function () { return execCommand('insertOrderedList'); }, title: "Ordered List", size: iconSize });
+                return (React.createElement(OrderedListIcon, { onClick: function () { return execCommand('insertOrderedList'); }, title: 'Ordered List', size: iconSize }));
             case 'blockquote':
-                return React.createElement(BlockquoteIcon, { onClick: function () { return execCommand('formatBlock', 'blockquote'); }, title: "Blockquote", size: iconSize });
+                return (React.createElement(BlockquoteIcon, { onClick: function () { return execCommand('formatBlock', 'blockquote'); }, title: 'Blockquote', size: iconSize }));
             case 'code':
-                return React.createElement(CodeIcon, { onClick: function () { return execCommand('formatBlock', 'pre'); }, title: "Code Block", size: iconSize });
+                return (React.createElement(CodeIcon, { onClick: function () { return execCommand('formatBlock', 'pre'); }, title: 'Code Block', size: iconSize }));
             case 'clearFormat':
-                return React.createElement(ClearFormatIcon, { onClick: clearFormat, title: "Clear Format", size: iconSize });
+                return (React.createElement(ClearFormatIcon, { onClick: clearFormat, title: 'Clear Format', size: iconSize }));
         }
     };
     return (React.createElement("div", { className: "simple-rich-editor ".concat(className || ''), style: style },
-        React.createElement("div", { className: "simple-rich-editor-toolbar" },
-            React.createElement("div", { className: "toolbar-container" }, toolbar.map(function (group, groupIndex) { return (React.createElement("div", { key: groupIndex, className: "toolbar-group" }, group.map(function (item, itemIndex) { return (React.createElement(React.Fragment, { key: "".concat(groupIndex, "-").concat(itemIndex) }, renderToolbarButton(item))); }))); })),
+        React.createElement("div", { className: 'simple-rich-editor-toolbar' },
+            React.createElement("div", { className: 'toolbar-container' }, toolbar.map(function (group, groupIndex) { return (React.createElement("div", { key: groupIndex, className: 'toolbar-group' }, group.map(function (item, itemIndex) { return (React.createElement(React.Fragment, { key: "".concat(groupIndex, "-").concat(itemIndex) }, renderToolbarButton(item))); }))); })),
             isLinkModalOpen && (React.createElement(React.Fragment, null,
-                React.createElement("div", { className: "link-modal-overlay", onClick: function () {
+                React.createElement("div", { className: 'link-modal-overlay', onClick: function () {
                         setIsLinkModalOpen(false);
                         setLinkUrl('');
                     } }),
-                React.createElement("div", { className: "link-modal" },
-                    React.createElement("div", { className: "link-modal-header" },
-                        React.createElement("h3", null, "Ba\u011Flant\u0131 Ekle"),
-                        React.createElement("button", { className: "close-button", onClick: function () {
+                React.createElement("div", { className: 'link-modal' },
+                    React.createElement("div", { className: 'link-modal-header' },
+                        React.createElement("h3", null, "Add Link"),
+                        React.createElement("button", { className: 'close-button', onClick: function () {
                                 setIsLinkModalOpen(false);
                                 setLinkUrl('');
                             } }, "\u00D7")),
-                    React.createElement("div", { className: "link-modal-content" },
-                        React.createElement("input", { type: "text", value: linkUrl, onChange: function (e) { return setLinkUrl(e.target.value); }, onKeyDown: handleKeyDown, placeholder: "https://example.com", autoFocus: true }),
-                        React.createElement("div", { className: "link-modal-actions" },
+                    React.createElement("div", { className: 'link-modal-content' },
+                        React.createElement("input", { type: 'text', value: linkUrl, onChange: function (e) {
+                                setLinkUrl(e.target.value);
+                                setValidationError('');
+                            }, onKeyDown: handleKeyDown, placeholder: 'https://example.com', autoFocus: true }),
+                        validationError && (React.createElement("div", { className: 'validation-error' }, validationError)),
+                        React.createElement("div", { className: 'link-modal-actions' },
                             React.createElement("button", { onClick: function () {
                                     setIsLinkModalOpen(false);
                                     setLinkUrl('');
-                                } }, "\u0130ptal"),
-                            React.createElement("button", { onClick: insertLink, className: "primary" }, "Ekle"))))))),
-        React.createElement("div", { ref: editorRef, contentEditable: true, className: "simple-rich-editor-content", onInput: handleInput }),
-        React.createElement("style", null, "\n        .simple-rich-editor {\n          border: 1px solid ".concat(mergedTheme.colors.border, ";\n          border-radius: ").concat(mergedTheme.borderRadius.editor, ";\n          overflow: visible;\n          box-shadow: ").concat(mergedTheme.shadows.editor, ";\n          background: ").concat(mergedTheme.colors.background, ";\n        }\n\n        .simple-rich-editor-toolbar {\n          padding: ").concat(mergedTheme.spacing.toolbarPadding, ";\n          background: ").concat(mergedTheme.colors.toolbarBackground, ";\n          border-bottom: 1px solid ").concat(mergedTheme.colors.border, ";\n          position: relative;\n        }\n\n        .toolbar-container {\n          display: flex;\n          gap: ").concat(mergedTheme.spacing.buttonGap, ";\n          flex-wrap: wrap;\n        }\n\n        .toolbar-group {\n          display: flex;\n          gap: ").concat(mergedTheme.spacing.buttonGap, ";\n          padding-right: ").concat(mergedTheme.spacing.buttonGap, ";\n          border-right: 1px solid ").concat(mergedTheme.colors.border, ";\n        }\n\n        .toolbar-group:last-child {\n          border-right: none;\n          padding-right: 0;\n        }\n\n        .simple-rich-editor-toolbar button {\n          padding: ").concat(mergedTheme.spacing.buttonPadding, ";\n          border: 1px solid ").concat(mergedTheme.colors.border, ";\n          border-radius: ").concat(mergedTheme.borderRadius.button, ";\n          background: ").concat(mergedTheme.colors.buttonBackground, ";\n          cursor: pointer;\n          display: flex;\n          align-items: center;\n          justify-content: center;\n          color: ").concat(mergedTheme.colors.buttonText, ";\n          transition: all 0.2s ease;\n          min-width: ").concat(mergedTheme.dimensions.buttonMinSize, ";\n          min-height: ").concat(mergedTheme.dimensions.buttonMinSize, ";\n        }\n\n        .simple-rich-editor-toolbar button:hover {\n          background: ").concat(mergedTheme.colors.buttonHoverBackground, ";\n          border-color: ").concat(mergedTheme.colors.border, ";\n          color: ").concat(mergedTheme.colors.buttonHoverText, ";\n        }\n\n        .simple-rich-editor-toolbar button:active {\n          background: ").concat(mergedTheme.colors.buttonActiveBackground, ";\n          transform: translateY(1px);\n        }\n\n        .link-modal-overlay {\n          position: fixed;\n          top: 0;\n          left: 0;\n          right: 0;\n          bottom: 0;\n          background: rgba(0, 0, 0, 0.5);\n          z-index: 999;\n        }\n\n        .link-modal {\n          position: fixed;\n          top: 50%;\n          left: 50%;\n          transform: translate(-50%, -50%);\n          background: white;\n          border-radius: ").concat(mergedTheme.borderRadius.editor, ";\n          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n          border: 1px solid ").concat(mergedTheme.colors.border, ";\n          z-index: 1000;\n          width: 400px;\n          max-width: calc(100vw - 32px);\n          max-height: calc(100vh - 32px);\n          display: flex;\n          flex-direction: column;\n        }\n\n        .link-modal-header {\n          display: flex;\n          justify-content: space-between;\n          align-items: center;\n          padding: 16px;\n          border-bottom: 1px solid ").concat(mergedTheme.colors.border, ";\n          flex-shrink: 0;\n        }\n\n        .link-modal-header h3 {\n          margin: 0;\n          font-size: 1.1em;\n          color: ").concat(mergedTheme.colors.heading, ";\n        }\n\n        .link-modal-header .close-button {\n          background: none;\n          border: none;\n          font-size: 24px;\n          cursor: pointer;\n          padding: 0;\n          width: 32px;\n          height: 32px;\n          display: flex;\n          align-items: center;\n          justify-content: center;\n          color: ").concat(mergedTheme.colors.buttonText, ";\n          border-radius: 50%;\n        }\n\n        .link-modal-header .close-button:hover {\n          background: ").concat(mergedTheme.colors.buttonHoverBackground, ";\n        }\n\n        .link-modal-content {\n          padding: 16px;\n          overflow-y: auto;\n          flex-grow: 1;\n        }\n\n        .link-modal-content input {\n          width: 100%;\n          padding: 8px 12px;\n          border: 1px solid ").concat(mergedTheme.colors.border, ";\n          border-radius: ").concat(mergedTheme.borderRadius.button, ";\n          font-size: 14px;\n          margin-bottom: 16px;\n          box-sizing: border-box;\n        }\n\n        .link-modal-content input:focus {\n          outline: none;\n          border-color: ").concat(mergedTheme.colors.link, ";\n          box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);\n        }\n\n        .link-modal-actions {\n          display: flex;\n          justify-content: flex-end;\n          gap: 8px;\n          padding: 16px;\n          border-top: 1px solid ").concat(mergedTheme.colors.border, ";\n          flex-shrink: 0;\n        }\n\n        .link-modal-actions button {\n          padding: 8px 16px;\n          border: 1px solid ").concat(mergedTheme.colors.border, ";\n          border-radius: ").concat(mergedTheme.borderRadius.button, ";\n          background: ").concat(mergedTheme.colors.buttonBackground, ";\n          cursor: pointer;\n          font-size: 14px;\n        }\n\n        .link-modal-actions button.primary {\n          background: ").concat(mergedTheme.colors.link, ";\n          color: white;\n          border-color: ").concat(mergedTheme.colors.link, ";\n        }\n\n        .link-modal-actions button:hover {\n          background: ").concat(mergedTheme.colors.buttonHoverBackground, ";\n        }\n\n        .link-modal-actions button.primary:hover {\n          background: #1d4ed8;\n        }\n\n        .simple-rich-editor-content {\n          min-height: ").concat(mergedTheme.dimensions.minHeight, ";\n          padding: ").concat(mergedTheme.spacing.contentPadding, ";\n          outline: none;\n          color: ").concat(mergedTheme.colors.text, ";\n          line-height: ").concat(mergedTheme.typography.lineHeight, ";\n          font-size: ").concat(mergedTheme.typography.fontSize, ";\n          font-family: ").concat(mergedTheme.typography.fontFamily, ";\n        }\n\n        .simple-rich-editor-content:focus {\n          outline: none;\n        }\n\n        .simple-rich-editor-content p {\n          margin: 0 0 1em 0;\n        }\n\n        .simple-rich-editor-content ul,\n        .simple-rich-editor-content ol {\n          margin: 0 0 1em 1.5em;\n          padding: 0;\n        }\n\n        .simple-rich-editor-content ul li,\n        .simple-rich-editor-content ol li {\n          margin: 0.5em 0;\n        }\n\n        .simple-rich-editor-content h1,\n        .simple-rich-editor-content h2,\n        .simple-rich-editor-content h3,\n        .simple-rich-editor-content h4,\n        .simple-rich-editor-content h5,\n        .simple-rich-editor-content h6 {\n          margin: 1.5em 0 0.5em 0;\n          color: ").concat(mergedTheme.colors.heading, ";\n        }\n\n        .simple-rich-editor-content a {\n          color: ").concat(mergedTheme.colors.link, ";\n          text-decoration: none;\n        }\n\n        .simple-rich-editor-content a:hover {\n          text-decoration: underline;\n        }\n\n        .simple-rich-editor-content blockquote {\n          margin: 1em 0;\n          padding: 0.5em 1em;\n          border-left: 4px solid ").concat(mergedTheme.colors.blockquoteBorder, ";\n          background: ").concat(mergedTheme.colors.blockquoteBackground, ";\n          color: ").concat(mergedTheme.colors.text, ";\n        }\n\n        .simple-rich-editor-content pre {\n          margin: 1em 0;\n          padding: 1em;\n          background: ").concat(mergedTheme.colors.blockquoteBackground, ";\n          border-radius: ").concat(mergedTheme.borderRadius.editor, ";\n          overflow-x: auto;\n        }\n\n        .simple-rich-editor-content code {\n          font-family: monospace;\n          background: ").concat(mergedTheme.colors.codeBackground, ";\n          padding: 0.2em 0.4em;\n          border-radius: ").concat(mergedTheme.borderRadius.code, ";\n          font-size: 0.9em;\n        }\n      "))));
+                                } }, "Cancel"),
+                            React.createElement("button", { onClick: insertLink, className: 'primary' }, "Add"))))))),
+        React.createElement("div", { ref: editorRef, contentEditable: true, className: 'simple-rich-editor-content', onInput: handleInput }),
+        React.createElement("style", null, "\n        .simple-rich-editor {\n          border: 1px solid ".concat(mergedTheme.colors.border, ";\n          border-radius: ").concat(mergedTheme.borderRadius.editor, ";\n          overflow: visible;\n          box-shadow: ").concat(mergedTheme.shadows.editor, ";\n          background: ").concat(mergedTheme.colors.background, ";\n        }\n\n        .simple-rich-editor-toolbar {\n          padding: ").concat(mergedTheme.spacing.toolbarPadding, ";\n          background: ").concat(mergedTheme.colors.toolbarBackground, ";\n          border-bottom: 1px solid ").concat(mergedTheme.colors.border, ";\n          position: relative;\n        }\n\n        .toolbar-container {\n          display: flex;\n          gap: ").concat(mergedTheme.spacing.buttonGap, ";\n          flex-wrap: wrap;\n        }\n\n        .toolbar-group {\n          display: flex;\n          gap: ").concat(mergedTheme.spacing.buttonGap, ";\n          padding-right: ").concat(mergedTheme.spacing.buttonGap, ";\n          border-right: 1px solid ").concat(mergedTheme.colors.border, ";\n        }\n\n        .toolbar-group:last-child {\n          border-right: none;\n          padding-right: 0;\n        }\n\n        .simple-rich-editor-toolbar button {\n          padding: ").concat(mergedTheme.spacing.buttonPadding, ";\n          border: 1px solid ").concat(mergedTheme.colors.border, ";\n          border-radius: ").concat(mergedTheme.borderRadius.button, ";\n          background: ").concat(mergedTheme.colors.buttonBackground, ";\n          cursor: pointer;\n          display: flex;\n          align-items: center;\n          justify-content: center;\n          color: ").concat(mergedTheme.colors.buttonText, ";\n          transition: all 0.2s ease;\n          min-width: ").concat(mergedTheme.dimensions.buttonMinSize, ";\n          min-height: ").concat(mergedTheme.dimensions.buttonMinSize, ";\n        }\n\n        .simple-rich-editor-toolbar button:hover {\n          background: ").concat(mergedTheme.colors.buttonHoverBackground, ";\n          border-color: ").concat(mergedTheme.colors.border, ";\n          color: ").concat(mergedTheme.colors.buttonHoverText, ";\n        }\n\n        .simple-rich-editor-toolbar button:active {\n          background: ").concat(mergedTheme.colors.buttonActiveBackground, ";\n          transform: translateY(1px);\n        }\n\n        .link-modal-overlay {\n          position: fixed;\n          top: 0;\n          left: 0;\n          right: 0;\n          bottom: 0;\n          background: rgba(0, 0, 0, 0.5);\n          z-index: 999;\n        }\n\n        .link-modal {\n          position: fixed;\n          top: 50%;\n          left: 50%;\n          transform: translate(-50%, -50%);\n          background: white;\n          border-radius: ").concat(mergedTheme.borderRadius.editor, ";\n          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n          border: 1px solid ").concat(mergedTheme.colors.border, ";\n          z-index: 1000;\n          width: 400px;\n          max-width: calc(100vw - 32px);\n          max-height: calc(100vh - 32px);\n          display: flex;\n          flex-direction: column;\n        }\n\n        .link-modal-header {\n          display: flex;\n          justify-content: space-between;\n          align-items: center;\n          padding: 16px;\n          border-bottom: 1px solid ").concat(mergedTheme.colors.border, ";\n          flex-shrink: 0;\n        }\n\n        .link-modal-header h3 {\n          margin: 0;\n          font-size: 1.1em;\n          color: ").concat(mergedTheme.colors.heading, ";\n        }\n\n        .link-modal-header .close-button {\n          background: none;\n          border: none;\n          font-size: 24px;\n          cursor: pointer;\n          padding: 0;\n          width: 32px;\n          height: 32px;\n          display: flex;\n          align-items: center;\n          justify-content: center;\n          color: ").concat(mergedTheme.colors.buttonText, ";\n          border-radius: 50%;\n        }\n\n        .link-modal-header .close-button:hover {\n          background: ").concat(mergedTheme.colors.buttonHoverBackground, ";\n        }\n\n        .link-modal-content {\n          padding: 16px;\n          overflow-y: auto;\n          flex-grow: 1;\n        }\n\n        .link-modal-content input {\n          width: 100%;\n          padding: 8px 12px;\n          border: 1px solid ").concat(mergedTheme.colors.border, ";\n          border-radius: ").concat(mergedTheme.borderRadius.button, ";\n          font-size: 14px;\n          margin-bottom: 16px;\n          box-sizing: border-box;\n        }\n\n        .link-modal-content input:focus {\n          outline: none;\n          border-color: ").concat(mergedTheme.colors.link, ";\n          box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);\n        }\n\n        .validation-error {\n          color: #dc2626;\n          font-size: 14px;\n          margin-top: 8px;\n          margin-bottom: 16px;\n        }\n\n        .link-modal-actions {\n          display: flex;\n          justify-content: flex-end;\n          gap: 8px;\n          padding: 16px;\n          border-top: 1px solid ").concat(mergedTheme.colors.border, ";\n          flex-shrink: 0;\n        }\n\n        .link-modal-actions button {\n          padding: 8px 16px;\n          border: 1px solid ").concat(mergedTheme.colors.border, ";\n          border-radius: ").concat(mergedTheme.borderRadius.button, ";\n          background: ").concat(mergedTheme.colors.buttonBackground, ";\n          cursor: pointer;\n          font-size: 14px;\n        }\n\n        .link-modal-actions button.primary {\n          background: ").concat(mergedTheme.colors.link, ";\n          color: white;\n          border-color: ").concat(mergedTheme.colors.link, ";\n        }\n\n        .link-modal-actions button:hover {\n          background: ").concat(mergedTheme.colors.buttonHoverBackground, ";\n        }\n\n        .link-modal-actions button.primary:hover {\n          background: #1d4ed8;\n        }\n\n        .simple-rich-editor-content {\n          min-height: ").concat(mergedTheme.dimensions.minHeight, ";\n          padding: ").concat(mergedTheme.spacing.contentPadding, ";\n          outline: none;\n          color: ").concat(mergedTheme.colors.text, ";\n          line-height: ").concat(mergedTheme.typography.lineHeight, ";\n          font-size: ").concat(mergedTheme.typography.fontSize, ";\n          font-family: ").concat(mergedTheme.typography.fontFamily, ";\n        }\n\n        .simple-rich-editor-content:focus {\n          outline: none;\n        }\n\n        .simple-rich-editor-content p {\n          margin: 0 0 1em 0;\n        }\n\n        .simple-rich-editor-content ul,\n        .simple-rich-editor-content ol {\n          margin: 0 0 1em 1.5em;\n          padding: 0;\n        }\n\n        .simple-rich-editor-content ul li,\n        .simple-rich-editor-content ol li {\n          margin: 0.5em 0;\n        }\n\n        .simple-rich-editor-content h1,\n        .simple-rich-editor-content h2,\n        .simple-rich-editor-content h3,\n        .simple-rich-editor-content h4,\n        .simple-rich-editor-content h5,\n        .simple-rich-editor-content h6 {\n          margin: 1.5em 0 0.5em 0;\n          color: ").concat(mergedTheme.colors.heading, ";\n        }\n\n        .simple-rich-editor-content a {\n          color: ").concat(mergedTheme.colors.link, ";\n          text-decoration: none;\n        }\n\n        .simple-rich-editor-content a:hover {\n          text-decoration: underline;\n        }\n\n        .simple-rich-editor-content blockquote {\n          margin: 1em 0;\n          padding: 0.5em 1em;\n          border-left: 4px solid ").concat(mergedTheme.colors.blockquoteBorder, ";\n          background: ").concat(mergedTheme.colors.blockquoteBackground, ";\n          color: ").concat(mergedTheme.colors.text, ";\n        }\n\n        .simple-rich-editor-content pre {\n          margin: 1em 0;\n          padding: 1em;\n          background: ").concat(mergedTheme.colors.blockquoteBackground, ";\n          border-radius: ").concat(mergedTheme.borderRadius.editor, ";\n          overflow-x: auto;\n        }\n\n        .simple-rich-editor-content code {\n          font-family: monospace;\n          background: ").concat(mergedTheme.colors.codeBackground, ";\n          padding: 0.2em 0.4em;\n          border-radius: ").concat(mergedTheme.borderRadius.code, ";\n          font-size: 0.9em;\n        }\n      "))));
 };
 
 export { RichTextEditor };

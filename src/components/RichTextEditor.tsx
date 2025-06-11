@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import {
   BoldIcon,
   ItalicIcon,
@@ -124,7 +124,7 @@ export const defaultToolbar: ToolbarItem[][] = [
   ['bold', 'italic', 'underline', 'strike', 'link'],
   ['heading'],
   ['unorderedList', 'orderedList'],
-  ['blockquote', 'code', 'clearFormat']
+  ['blockquote', 'code', 'clearFormat'],
 ];
 
 export const RichTextEditor: React.FC<RichTextEditorProps> = ({
@@ -142,16 +142,17 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
   const [savedSelection, setSavedSelection] = useState<Range | null>(null);
+  const [validationError, setValidationError] = useState<string>('');
 
   const mergedTheme = {
     ...defaultTheme,
     ...theme,
-    colors: { ...defaultTheme.colors, ...theme.colors },
-    spacing: { ...defaultTheme.spacing, ...theme.spacing },
-    typography: { ...defaultTheme.typography, ...theme.typography },
-    borderRadius: { ...defaultTheme.borderRadius, ...theme.borderRadius },
-    shadows: { ...defaultTheme.shadows, ...theme.shadows },
-    dimensions: { ...defaultTheme.dimensions, ...theme.dimensions },
+    colors: {...defaultTheme.colors, ...theme.colors},
+    spacing: {...defaultTheme.spacing, ...theme.spacing},
+    typography: {...defaultTheme.typography, ...theme.typography},
+    borderRadius: {...defaultTheme.borderRadius, ...theme.borderRadius},
+    shadows: {...defaultTheme.shadows, ...theme.shadows},
+    dimensions: {...defaultTheme.dimensions, ...theme.dimensions},
   };
 
   useEffect(() => {
@@ -178,11 +179,16 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       const container = range.commonAncestorContainer;
 
       // Seçili alanın tüm blok elementlerini bul
-      const blockElements = container.nodeType === Node.ELEMENT_NODE
-        ? [container as Element]
-        : Array.from(container.parentElement?.querySelectorAll('h1, h2, h3, blockquote, pre') || []);
+      const blockElements =
+        container.nodeType === Node.ELEMENT_NODE
+          ? [container as Element]
+          : Array.from(
+              container.parentElement?.querySelectorAll(
+                'h1, h2, h3, blockquote, pre'
+              ) || []
+            );
 
-      blockElements.forEach(element => {
+      blockElements.forEach((element) => {
         if (element.matches('h1, h2, h3, blockquote, pre')) {
           // Yeni bir paragraf oluştur
           const p = document.createElement('p');
@@ -230,21 +236,22 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     if (selection && selection.toString()) {
       saveSelection();
       setIsLinkModalOpen(true);
+      setValidationError('');
     } else {
-      alert('Lütfen bağlantı eklemek için metin seçin');
+      setValidationError('Please select text to add a link');
     }
   };
 
   const insertLink = () => {
     if (!linkUrl) {
-      alert('Lütfen bir URL girin');
+      setValidationError('Please enter a URL');
       return;
     }
 
     try {
       new URL(linkUrl);
     } catch {
-      alert('Lütfen geçerli bir URL girin');
+      setValidationError('Please enter a valid URL');
       return;
     }
 
@@ -270,6 +277,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       setLinkUrl('');
       setIsLinkModalOpen(false);
       setSavedSelection(null);
+      setValidationError('');
 
       // Editöre focus'u geri ver
       editorRef.current.focus();
@@ -284,42 +292,97 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       setIsLinkModalOpen(false);
       setLinkUrl('');
       setSavedSelection(null);
+      setValidationError('');
     }
   };
 
   const renderToolbarButton = (item: ToolbarItem) => {
     switch (item) {
       case 'bold':
-        return <BoldIcon onClick={() => execCommand('bold')} title="Bold" size={iconSize} />;
+        return (
+          <BoldIcon
+            onClick={() => execCommand('bold')}
+            title='Bold'
+            size={iconSize}
+          />
+        );
       case 'italic':
-        return <ItalicIcon onClick={() => execCommand('italic')} title="Italic" size={iconSize} />;
+        return (
+          <ItalicIcon
+            onClick={() => execCommand('italic')}
+            title='Italic'
+            size={iconSize}
+          />
+        );
       case 'underline':
-        return <UnderlineIcon onClick={() => execCommand('underline')} title="Underline" size={iconSize} />;
+        return (
+          <UnderlineIcon
+            onClick={() => execCommand('underline')}
+            title='Underline'
+            size={iconSize}
+          />
+        );
       case 'strike':
-        return <StrikeIcon onClick={() => execCommand('strikeThrough')} title="Strikethrough" size={iconSize} />;
+        return (
+          <StrikeIcon
+            onClick={() => execCommand('strikeThrough')}
+            title='Strikethrough'
+            size={iconSize}
+          />
+        );
       case 'link':
-        return <LinkIcon onClick={handleLink} title="Link" size={iconSize} />;
+        return <LinkIcon onClick={handleLink} title='Link' size={iconSize} />;
       case 'heading':
-        return <HeadingDropdown title="Başlık" size={iconSize} />;
+        return <HeadingDropdown title='Heading' size={iconSize} />;
       case 'unorderedList':
-        return <UnorderedListIcon onClick={() => execCommand('insertUnorderedList')} title="Unordered List" size={iconSize} />;
+        return (
+          <UnorderedListIcon
+            onClick={() => execCommand('insertUnorderedList')}
+            title='Unordered List'
+            size={iconSize}
+          />
+        );
       case 'orderedList':
-        return <OrderedListIcon onClick={() => execCommand('insertOrderedList')} title="Ordered List" size={iconSize} />;
+        return (
+          <OrderedListIcon
+            onClick={() => execCommand('insertOrderedList')}
+            title='Ordered List'
+            size={iconSize}
+          />
+        );
       case 'blockquote':
-        return <BlockquoteIcon onClick={() => execCommand('formatBlock', 'blockquote')} title="Blockquote" size={iconSize} />;
+        return (
+          <BlockquoteIcon
+            onClick={() => execCommand('formatBlock', 'blockquote')}
+            title='Blockquote'
+            size={iconSize}
+          />
+        );
       case 'code':
-        return <CodeIcon onClick={() => execCommand('formatBlock', 'pre')} title="Code Block" size={iconSize} />;
+        return (
+          <CodeIcon
+            onClick={() => execCommand('formatBlock', 'pre')}
+            title='Code Block'
+            size={iconSize}
+          />
+        );
       case 'clearFormat':
-        return <ClearFormatIcon onClick={clearFormat} title="Clear Format" size={iconSize} />;
+        return (
+          <ClearFormatIcon
+            onClick={clearFormat}
+            title='Clear Format'
+            size={iconSize}
+          />
+        );
     }
   };
 
   return (
     <div className={`simple-rich-editor ${className || ''}`} style={style}>
-      <div className="simple-rich-editor-toolbar">
-        <div className="toolbar-container">
+      <div className='simple-rich-editor-toolbar'>
+        <div className='toolbar-container'>
           {toolbar.map((group, groupIndex) => (
-            <div key={groupIndex} className="toolbar-group">
+            <div key={groupIndex} className='toolbar-group'>
               {group.map((item, itemIndex) => (
                 <React.Fragment key={`${groupIndex}-${itemIndex}`}>
                   {renderToolbarButton(item)}
@@ -330,15 +393,18 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         </div>
         {isLinkModalOpen && (
           <>
-            <div className="link-modal-overlay" onClick={() => {
-              setIsLinkModalOpen(false);
-              setLinkUrl('');
-            }} />
-            <div className="link-modal">
-              <div className="link-modal-header">
-                <h3>Bağlantı Ekle</h3>
+            <div
+              className='link-modal-overlay'
+              onClick={() => {
+                setIsLinkModalOpen(false);
+                setLinkUrl('');
+              }}
+            />
+            <div className='link-modal'>
+              <div className='link-modal-header'>
+                <h3>Add Link</h3>
                 <button
-                  className="close-button"
+                  className='close-button'
                   onClick={() => {
                     setIsLinkModalOpen(false);
                     setLinkUrl('');
@@ -347,21 +413,33 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
                   ×
                 </button>
               </div>
-              <div className="link-modal-content">
+              <div className='link-modal-content'>
                 <input
-                  type="text"
+                  type='text'
                   value={linkUrl}
-                  onChange={(e) => setLinkUrl(e.target.value)}
+                  onChange={(e) => {
+                    setLinkUrl(e.target.value);
+                    setValidationError('');
+                  }}
                   onKeyDown={handleKeyDown}
-                  placeholder="https://example.com"
+                  placeholder='https://example.com'
                   autoFocus
                 />
-                <div className="link-modal-actions">
-                  <button onClick={() => {
-                    setIsLinkModalOpen(false);
-                    setLinkUrl('');
-                  }}>İptal</button>
-                  <button onClick={insertLink} className="primary">Ekle</button>
+                {validationError && (
+                  <div className='validation-error'>{validationError}</div>
+                )}
+                <div className='link-modal-actions'>
+                  <button
+                    onClick={() => {
+                      setIsLinkModalOpen(false);
+                      setLinkUrl('');
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button onClick={insertLink} className='primary'>
+                    Add
+                  </button>
                 </div>
               </div>
             </div>
@@ -372,7 +450,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       <div
         ref={editorRef}
         contentEditable
-        className="simple-rich-editor-content"
+        className='simple-rich-editor-content'
         onInput={handleInput}
       />
 
@@ -517,6 +595,13 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           outline: none;
           border-color: ${mergedTheme.colors.link};
           box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        .validation-error {
+          color: #dc2626;
+          font-size: 14px;
+          margin-top: 8px;
+          margin-bottom: 16px;
         }
 
         .link-modal-actions {
